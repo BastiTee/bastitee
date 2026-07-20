@@ -4,8 +4,98 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Perspective Calculation</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 360px;
+        margin: 2rem auto;
+        padding: 1rem;
+      }
+
+      form {
+        display: grid;
+        gap: 0.75rem;
+      }
+
+      label {
+        display: flex;
+        flex-direction: column;
+        font-weight: 600;
+      }
+
+      input {
+        padding: 0.5rem;
+        margin-top: 0.25rem;
+      }
+
+      button {
+        padding: 0.6rem;
+        cursor: pointer;
+      }
+
+      .result {
+        margin-top: 1rem;
+        font-weight: 700;
+      }
+
+      .diagram {
+        display: block;
+        width: min(100%, 360px);
+        margin: 1.25rem auto 0;
+      }
+    </style>
   </head>
   <body>
-    <p>.</p>
+    <h1>Perspective Calculator</h1>
+    <form id="calc-form">
+      <label>
+        b (cm)
+        <input id="b" type="number" step="any" required />
+      </label>
+      <label>
+        b' (cm)
+        <input id="bp" type="number" step="any" required />
+      </label>
+      <label>
+        α (°)
+        <input id="alpha" type="number" step="any" required />
+      </label>
+      <button type="submit">Calculate α'</button>
+    </form>
+
+    <div id="result" class="result">Result will appear here.</div>
+
+    <img
+      class="diagram"
+      src="perspective.png"
+      alt="Perspective diagram"
+    />
+
+    <script>
+      const form = document.getElementById("calc-form");
+      const result = document.getElementById("result");
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const b = parseFloat(document.getElementById("b").value);
+        const bp = parseFloat(document.getElementById("bp").value);
+        const alphaDeg = parseFloat(document.getElementById("alpha").value);
+
+        if ([b, bp, alphaDeg].some((value) => Number.isNaN(value))) {
+          result.textContent = "Please enter valid numbers.";
+          return;
+        }
+
+        const alphaRad = (alphaDeg * Math.PI) / 180;
+        const tanAlpha = Math.tan(alphaRad);
+        const numerator = b * tanAlpha;
+        const denominator = Math.sqrt(numerator * numerator + bp * bp);
+        const alphaPrimeRad = Math.asin(numerator / denominator);
+        const alphaPrimeDeg = (alphaPrimeRad * 180) / Math.PI;
+
+        result.textContent = `α' = ${alphaPrimeDeg.toFixed(2)}°`;
+      });
+    </script>
   </body>
 </html>
